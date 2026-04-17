@@ -1,0 +1,10 @@
+@import "./tokens.css";
+@import "./reset.css";
+
+body {
+  background-color: var(--color-background);
+  background-image: url("../assets/body-bg.png");
+  background-repeat: repeat;
+  background-size: 400px;
+  min-height: 100dvh;
+}
