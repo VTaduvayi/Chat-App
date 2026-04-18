@@ -11,20 +11,19 @@
   margin: 0 auto;
   padding: var(--spacing-lg) var(--spacing-md);
   padding-bottom: 5rem;
-}
-
-.heading {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: var(--spacing-lg);
+  overflow-y: auto;
 }
 
 .status {
   color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-xl) 0;
 }
 
 .error {
   color: #c0392b;
+  text-align: center;
+  padding: var(--spacing-xl) 0;
 }
 
 .messageList {
@@ -35,4 +34,9 @@
 
 .messageItem {
   display: flex;
+  justify-content: flex-start;
+}
+
+.selfItem {
+  justify-content: flex-end;
 }

@@ -20,10 +20,14 @@
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #999999;
 
-  /* Message bubbles */
+  /* Message bubbles — others */
   --color-bubble-other: #ffffff;
   --color-bubble-border: #e0e0e0;
   --color-text-author: #b0b0b0;
+
+  /* Message bubbles — self */
+  --color-bubble-self: #fef9e7;
+  --color-bubble-self-border: #f0e6b8;
 
   /* Interactive */
   --color-primary: #4a9fe5;

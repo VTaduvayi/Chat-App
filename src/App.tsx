@@ -1,15 +1,22 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { fetchMessages, sendMessage } from "@/lib/api";
 import type { Message } from "@/types";
 import { MessageBubble } from "@/features/chat/components/MessageBubble";
 import { MessageInput } from "@/features/chat/components/MessageInput";
 import styles from "./App.module.css";
 
+const CURRENT_USER = localStorage.getItem("chat-author") ?? "";
+
 export function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     fetchMessages()
@@ -23,6 +30,10 @@ export function App() {
       });
   }, []);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const handleSend = useCallback(async (message: string, author: string) => {
     setIsSending(true);
     try {
@@ -33,11 +44,11 @@ export function App() {
     }
   }, []);
 
+  const currentAuthor = localStorage.getItem("chat-author") ?? "";
+
   return (
     <div className={styles.layout}>
       <main className={styles.chat}>
-        <h1 className={styles.heading}>Chat</h1>
-
         {isLoading && <p className={styles.status}>Loading messages…</p>}
 
         {error && (
@@ -52,11 +63,20 @@ export function App() {
 
         <ul className={styles.messageList} aria-label="Chat messages">
           {messages.map((msg) => (
-            <li key={msg._id} className={styles.messageItem}>
-              <MessageBubble message={msg} />
+            <li
+              key={msg._id}
+              className={`${styles.messageItem} ${
+                msg.author === currentAuthor ? styles.selfItem : ""
+              }`}
+            >
+              <MessageBubble
+                message={msg}
+                isSelf={msg.author === currentAuthor}
+              />
             </li>
           ))}
         </ul>
+        <div ref={messagesEndRef} aria-hidden="true" />
       </main>
 
       <MessageInput onSend={handleSend} isSending={isSending} />

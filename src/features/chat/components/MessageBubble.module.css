@@ -1,10 +1,18 @@
 .bubble {
-  background-color: var(--color-bubble-other, #ffffff);
-  border: 1px solid var(--color-bubble-border, #e0e0e0);
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   max-width: var(--bubble-max-width, 65%);
   width: fit-content;
+}
+
+.other {
+  background-color: var(--color-bubble-other, #ffffff);
+  border: 1px solid var(--color-bubble-border, #e0e0e0);
+}
+
+.self {
+  background-color: var(--color-bubble-self, #fef9e7);
+  border: 1px solid var(--color-bubble-self-border, #f0e6b8);
 }
 
 .author {

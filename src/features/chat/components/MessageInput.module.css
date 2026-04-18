@@ -7,12 +7,12 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--input-bar-padding);
   background-color: var(--color-primary, #4a9fe5);
 }
 
 .authorInput {
-  width: 120px;
+  width: 100px;
   flex-shrink: 0;
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--color-bubble-border, #e0e0e0);
@@ -68,4 +68,10 @@
   color: #ffffff;
   margin: 0;
   padding: var(--spacing-xs) var(--spacing-md) 0;
+}
+
+@media (min-width: 768px) {
+  .authorInput {
+    width: 140px;
+  }
 }
