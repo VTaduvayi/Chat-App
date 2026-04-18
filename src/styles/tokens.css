@@ -6,6 +6,7 @@
   --font-size-base: 1rem;
   --font-size-sm: 0.8125rem;
   --font-size-xs: 0.75rem;
+  --font-size-lg: 1.125rem;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -19,7 +20,13 @@
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #999999;
 
+  /* Message bubbles */
+  --color-bubble-other: #ffffff;
+  --color-bubble-border: #e0e0e0;
+  --color-text-author: #b0b0b0;
+
   /* Layout */
   --chat-max-width: 720px;
+  --bubble-max-width: 65%;
   --border-radius: 8px;
 }
