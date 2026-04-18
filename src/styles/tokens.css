@@ -25,6 +25,13 @@
   --color-bubble-border: #e0e0e0;
   --color-text-author: #b0b0b0;
 
+  /* Interactive */
+  --color-primary: #4a9fe5;
+  --color-primary-dark: #2e8bd4;
+  --color-accent: #f47b5a;
+  --color-accent-hover: #e56a49;
+  --color-input-bg: #ffffff;
+
   /* Layout */
   --chat-max-width: 720px;
   --bubble-max-width: 65%;

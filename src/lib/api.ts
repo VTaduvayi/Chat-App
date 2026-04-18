@@ -26,10 +26,18 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new ApiError(
-      response.status,
-      `Request failed: ${response.status} ${response.statusText}`,
-    );
+    let errorMessage = `Request failed: ${response.status} ${response.statusText}`;
+
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {
+      // response body wasn't JSON — use the default message
+    }
+
+    throw new ApiError(response.status, errorMessage);
   }
 
   return response.json() as Promise<T>;
@@ -37,4 +45,14 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 export async function fetchMessages(limit = 50): Promise<Message[]> {
   return request<Message[]>(`/messages?limit=${limit}`);
+}
+
+export async function sendMessage(
+  message: string,
+  author: string,
+): Promise<Message> {
+  return request<Message>("/messages", {
+    method: "POST",
+    body: JSON.stringify({ message, author }),
+  });
 }

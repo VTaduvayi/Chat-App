@@ -1,0 +1,71 @@
+.inputBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary, #4a9fe5);
+}
+
+.authorInput {
+  width: 120px;
+  flex-shrink: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-bubble-border, #e0e0e0);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  background-color: var(--color-input-bg, #ffffff);
+}
+
+.authorInput:focus {
+  outline: 2px solid var(--color-primary-dark, #2e8bd4);
+  outline-offset: 1px;
+}
+
+.messageInput {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-bubble-border, #e0e0e0);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  background-color: var(--color-input-bg, #ffffff);
+}
+
+.messageInput:focus {
+  outline: 2px solid var(--color-primary-dark, #2e8bd4);
+  outline-offset: 1px;
+}
+
+.sendButton {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-accent, #f47b5a);
+  color: #ffffff;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: var(--color-accent-hover, #e56a49);
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: #ffffff;
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-md) 0;
+}
