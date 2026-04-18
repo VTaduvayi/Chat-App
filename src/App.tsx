@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { fetchMessages, sendMessage } from "@/lib/api";
 import type { Message } from "@/types";
-import { MessageBubble } from "@/components/MessageBubble";
-import { MessageInput } from "@/components/MessageInput";
+import { MessageBubble } from "@/features/chat/components/MessageBubble";
+import { MessageInput } from "@/features/chat/components/MessageInput";
 import styles from "./App.module.css";
 
 export function App() {
