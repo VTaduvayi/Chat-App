@@ -36,8 +36,18 @@
   --color-accent-hover: #e56a49;
   --color-input-bg: #ffffff;
 
-  /* Layout */
+  /* Layout — mobile first */
   --chat-max-width: 720px;
-  --bubble-max-width: 65%;
+  --bubble-max-width: 85%;
   --border-radius: 8px;
+  --chat-padding: 0.75rem;
+  --input-bar-padding: 0.5rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --bubble-max-width: 65%;
+    --chat-padding: 1.5rem;
+    --input-bar-padding: 0.75rem 1rem;
+  }
 }
