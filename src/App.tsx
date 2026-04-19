@@ -5,46 +5,64 @@ import { MessageBubble } from "@/features/chat/components/MessageBubble";
 import { MessageInput } from "@/features/chat/components/MessageInput";
 import styles from "./App.module.css";
 
-const CURRENT_USER = localStorage.getItem("chat-author") ?? "";
+const POLL_INTERVAL = 3000;
 
 export function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [currentAuthor, setCurrentAuthor] = useState(
+    () => localStorage.getItem("chat-author") ?? "",
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const shouldScrollRef = useRef(true);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (shouldScrollRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
-  useEffect(() => {
-    fetchMessages()
-      .then((data) => {
-        setMessages(data);
-        setIsLoading(false);
-      })
-      .catch((err: Error) => {
-        setError(err.message);
-        setIsLoading(false);
-      });
+  const loadMessages = useCallback(async () => {
+    try {
+      const data = await fetchMessages();
+      setMessages(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load");
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
+  // Initial load
+  useEffect(() => {
+    loadMessages();
+  }, [loadMessages]);
+
+  // Poll for new messages
+  useEffect(() => {
+    const interval = setInterval(loadMessages, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [loadMessages]);
+
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const handleSend = useCallback(async (message: string, author: string) => {
     setIsSending(true);
+    shouldScrollRef.current = true;
     try {
       const newMessage = await sendMessage(message, author);
       setMessages((prev) => [...prev, newMessage]);
+      setCurrentAuthor(author);
     } finally {
       setIsSending(false);
     }
   }, []);
-
-  const currentAuthor = localStorage.getItem("chat-author") ?? "";
 
   return (
     <div className={styles.layout}>
