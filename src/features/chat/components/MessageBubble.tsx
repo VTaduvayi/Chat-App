@@ -1,4 +1,5 @@
 import type { Message } from "@/types";
+import { decodeHtml } from "@/utils/decodeHtml";
 import styles from "./MessageBubble.module.css";
 
 interface MessageBubbleProps {
@@ -22,8 +23,10 @@ export function MessageBubble({ message, isSelf }: MessageBubbleProps) {
     <article
       className={`${styles.bubble} ${isSelf ? styles.self : styles.other}`}
     >
-      {!isSelf && <span className={styles.author}>{message.author}</span>}
-      <p className={styles.body}>{message.message}</p>
+      {!isSelf && (
+        <span className={styles.author}>{decodeHtml(message.author)}</span>
+      )}
+      <p className={styles.body}>{decodeHtml(message.message)}</p>
       <time dateTime={message.createdAt} className={styles.timestamp}>
         {formattedDate}
       </time>
