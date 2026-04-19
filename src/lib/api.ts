@@ -16,31 +16,44 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${API_TOKEN}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
 
-  if (!response.ok) {
-    let errorMessage = `Request failed: ${response.status} ${response.statusText}`;
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`,
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
 
-    try {
-      const errorData = await response.json();
-      if (errorData?.message) {
-        errorMessage = errorData.message;
+    if (!response.ok) {
+      let errorMessage = `Request failed: ${response.status} ${response.statusText}`;
+
+      try {
+        const errorData = await response.json();
+        if (errorData?.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // response body wasn't JSON
       }
-    } catch {
-      // response body wasn't JSON — use the default message
+
+      throw new ApiError(response.status, errorMessage);
     }
 
-    throw new ApiError(response.status, errorMessage);
+    return response.json() as Promise<T>;
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError(0, "Request timed out. Please check your connection.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return response.json() as Promise<T>;
 }
 
 export async function fetchMessages(limit = 50): Promise<Message[]> {

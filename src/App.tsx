@@ -16,10 +16,10 @@ export function App() {
     () => localStorage.getItem("chat-author") ?? "",
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const shouldScrollRef = useRef(true);
+  const messageCountRef = useRef(0);
 
   const scrollToBottom = () => {
-    if (shouldScrollRef.current) {
+    if (messageCountRef.current < messages.length) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   };
@@ -36,25 +36,44 @@ export function App() {
     }
   }, []);
 
-  // Initial load
+  // Poll for new messages, pause when tab is hidden
   useEffect(() => {
-    loadMessages();
+    let interval: ReturnType<typeof setInterval>;
+
+    const startPolling = () => {
+      loadMessages();
+      interval = setInterval(loadMessages, POLL_INTERVAL);
+    };
+
+    const stopPolling = () => {
+      clearInterval(interval);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    startPolling();
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [loadMessages]);
 
-  // Poll for new messages
-  useEffect(() => {
-    const interval = setInterval(loadMessages, POLL_INTERVAL);
-    return () => clearInterval(interval);
-  }, [loadMessages]);
-
-  // Scroll to bottom when messages change
+  // Scroll to bottom when new messages arrive
   useEffect(() => {
     scrollToBottom();
+    messageCountRef.current = messages.length;
   }, [messages]);
 
   const handleSend = useCallback(async (message: string, author: string) => {
     setIsSending(true);
-    shouldScrollRef.current = true;
     try {
       const newMessage = await sendMessage(message, author);
       setMessages((prev) => [...prev, newMessage]);
@@ -66,20 +85,41 @@ export function App() {
 
   return (
     <div className={styles.layout}>
-      <main className={styles.chat}>
-        {isLoading && <p className={styles.status}>Loading messages…</p>}
+      <header className={styles.header} role="banner">
+        <h1 className={styles.heading}>Chat</h1>
+      </header>
 
-        {error && (
-          <p role="alert" className={styles.error}>
-            Failed to load messages: {error}
+      <main className={styles.chat} role="main" aria-label="Chat messages">
+        {isLoading && (
+          <p className={styles.status} role="status">
+            Loading messages…
           </p>
         )}
 
-        {!isLoading && !error && messages.length === 0 && (
-          <p className={styles.status}>No messages yet.</p>
+        {error && (
+          <div role="alert" className={styles.error}>
+            <p>{error}</p>
+            <button
+              className={styles.retryButton}
+              onClick={() => loadMessages()}
+              type="button"
+            >
+              Retry
+            </button>
+          </div>
         )}
 
-        <ul className={styles.messageList} aria-label="Chat messages">
+        {!isLoading && !error && messages.length === 0 && (
+          <p className={styles.status} role="status">
+            No messages yet. Start the conversation!
+          </p>
+        )}
+
+        <ul
+          className={styles.messageList}
+          aria-live="polite"
+          aria-relevant="additions"
+        >
           {messages.map((msg) => (
             <li
               key={msg._id}
