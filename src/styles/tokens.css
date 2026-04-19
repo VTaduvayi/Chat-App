@@ -4,8 +4,8 @@
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
   --font-size-base: 1rem;
-  --font-size-sm: 0.8125rem;
-  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.8125rem;
   --font-size-lg: 1.125rem;
 
   /* Spacing */
@@ -44,9 +44,9 @@
   --input-bar-padding: 0.5rem 0.75rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   :root {
-    --bubble-max-width: 65%;
+    --bubble-max-width: 75%;
     --chat-padding: 1.5rem;
     --input-bar-padding: 0.75rem 1rem;
   }

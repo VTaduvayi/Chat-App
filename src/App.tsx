@@ -36,7 +36,6 @@ export function App() {
     }
   }, []);
 
-  // Poll for new messages, pause when tab is hidden
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
@@ -66,7 +65,6 @@ export function App() {
     };
   }, [loadMessages]);
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     scrollToBottom();
     messageCountRef.current = messages.length;
@@ -85,10 +83,6 @@ export function App() {
 
   return (
     <div className={styles.layout}>
-      <header className={styles.header} role="banner">
-        <h1 className={styles.heading}>Chat</h1>
-      </header>
-
       <main className={styles.chat} role="main" aria-label="Chat messages">
         {isLoading && (
           <p className={styles.status} role="status">
