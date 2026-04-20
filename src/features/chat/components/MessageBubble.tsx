@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Message } from "@/types";
 import { decodeHtml } from "@/utils/decodeHtml";
 import styles from "./MessageBubble.module.css";
@@ -7,7 +8,10 @@ interface MessageBubbleProps {
   isSelf: boolean;
 }
 
-export function MessageBubble({ message, isSelf }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({
+  message,
+  isSelf,
+}: MessageBubbleProps) {
   const formattedDate = new Date(message.createdAt).toLocaleDateString(
     undefined,
     {
@@ -32,4 +36,4 @@ export function MessageBubble({ message, isSelf }: MessageBubbleProps) {
       </time>
     </article>
   );
-}
+});

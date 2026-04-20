@@ -17,11 +17,22 @@ export function App() {
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageCountRef = useRef(0);
+  const lastMessageDateRef = useRef<string | undefined>(undefined);
 
-  const loadMessages = useCallback(async () => {
+  const loadMessages = useCallback(async (after?: string) => {
     try {
-      const data = await fetchMessages();
-      setMessages(data);
+      const data = await fetchMessages(50, after);
+      if (after) {
+        // Incremental: append only new messages
+        setMessages((prev) => {
+          const existingIds = new Set(prev.map((m) => m._id));
+          const newMessages = data.filter((m) => !existingIds.has(m._id));
+          return newMessages.length > 0 ? [...prev, ...newMessages] : prev;
+        });
+      } else {
+        // Initial load: replace all
+        setMessages(data);
+      }
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load");
@@ -30,12 +41,28 @@ export function App() {
     }
   }, []);
 
+  // Track latest message date for incremental polling
+  useEffect(() => {
+    if (messages.length > 0) {
+      const latest = messages[messages.length - 1];
+      if (latest) {
+        lastMessageDateRef.current = latest.createdAt;
+      }
+    }
+  }, [messages]);
+
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
     const startPolling = () => {
-      loadMessages();
-      interval = setInterval(loadMessages, POLL_INTERVAL);
+      if (!lastMessageDateRef.current) {
+        loadMessages();
+      } else {
+        loadMessages(lastMessageDateRef.current);
+      }
+      interval = setInterval(() => {
+        loadMessages(lastMessageDateRef.current);
+      }, POLL_INTERVAL);
     };
 
     const stopPolling = () => {
@@ -66,19 +93,16 @@ export function App() {
     messageCountRef.current = messages.length;
   }, [messages]);
 
-  const handleSend = useCallback(
-    async (message: string, author: string) => {
-      setIsSending(true);
-      try {
-        const newMessage = await sendMessage(message, author);
-        setMessages((prev) => [...prev, newMessage]);
-        setCurrentAuthor(author);
-      } finally {
-        setIsSending(false);
-      }
-    },
-    [],
-  );
+  const handleSend = useCallback(async (message: string, author: string) => {
+    setIsSending(true);
+    try {
+      const newMessage = await sendMessage(message, author);
+      setMessages((prev) => [...prev, newMessage]);
+      setCurrentAuthor(author);
+    } finally {
+      setIsSending(false);
+    }
+  }, []);
 
   return (
     <div className={styles.layout}>

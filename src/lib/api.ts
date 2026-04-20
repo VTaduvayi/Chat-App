@@ -56,8 +56,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 }
 
-export async function fetchMessages(limit = 50): Promise<Message[]> {
-  return request<Message[]>(`/messages?limit=${limit}`);
+export async function fetchMessages(
+  limit = 50,
+  after?: string,
+): Promise<Message[]> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (after) {
+    params.set("after", after);
+  }
+  return request<Message[]>(`/messages?${params.toString()}`);
 }
 
 export async function sendMessage(
