@@ -1,73 +1,150 @@
-# React + TypeScript + Vite
+# 💬 Chat Application (Frontend Challenge)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive chat interface built with **React + TypeScript + Vite**, implementing message fetching, sending, validation, and accessibility best practices.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Features
 
-## React Compiler
+### Core Functionality
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* Fetch and display chat messages from API
+* Send messages with author name
+* Polling-based updates (every 3 seconds)
+* Retry mechanism on API failure
 
-## Expanding the ESLint configuration
+### UX & Accessibility
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Validation for author and message fields
+* Inline error hints (no layout shift / clipping issues)
+* Keyboard-friendly (Enter to send)
+* Screen reader support (`aria-live`, `role="alert"`, labels)
+* Auto-scroll to latest message (only when new messages arrive)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Responsive Design
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* Mobile-friendly layout
+* Adaptive validation hints (no overflow on small screens)
+* Desktop-centered layout with max width
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Performance Considerations
+
+* Polling pauses when tab is inactive (`visibilitychange`)
+* Avoids unnecessary re-renders
+* Efficient state updates
+
+---
+
+## 🧠 Architecture
+
+The project follows a **feature-based structure**:
+
+```
+src/
+  features/chat/
+    components/
+      MessageInput.tsx
+      MessageBubble.tsx
+    api/
+      api.ts
+    types/
+  App.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Key Decisions
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+* **Feature-based structure** → scalable and maintainable
+* **Centralized API layer** → reusable and testable
+* **Controlled components** → predictable form behavior
+* **Minimal abstraction** → avoids overengineering
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🔌 API Integration
+
+* Uses `fetch` with a centralized request helper
+* Handles:
+
+  * authentication headers
+  * error parsing (`ApiError`)
+  * JSON response typing
+
+### Supported endpoints:
+
+* `GET /messages`
+* `POST /messages`
+
+---
+
+## ⚠️ Error Handling
+
+* API errors surfaced to UI
+* Retry option for failed fetch
+* Input validation prevents invalid submissions
+* Message input preserved on failure
+
+---
+
+## 🧪 Testing
+
+Basic API tests implemented using **Vitest**:
+
+* fetchMessages success + failure
+* sendMessage success
+
+These tests validate:
+
+* correct API behavior
+* error handling via `ApiError`
+
+---
+
+## 📱 Responsiveness Strategy
+
+* Mobile-first approach
+* Breakpoint at `768px`
+* Validation hints adapt:
+
+  * Desktop → tooltip style
+  * Mobile → wrapped, non-overflowing
+
+---
+
+## ⚡ Performance Decisions
+
+Instead of overengineering (pagination/virtualization), the app focuses on:
+
+* efficient polling
+* visibility-based optimization
+* minimal DOM updates
+
+### Future Improvements
+
+* Pagination using `after` cursortek
+* Virtualized message list for large datasets
+* WebSocket-based real-time updates
+
+---
+
+## 🛠️ Setup & Run
+
+```bash
+# install dependencies
+npm install
+
+# run development server
+npm run dev
+
+# run tests
+npm run test
 ```
+
+---
+
+## 📝 Notes
+
+* This implementation prioritizes **clarity, UX, and maintainability**
+* Trade-offs were made to avoid unnecessary complexity within the given time constraints
+
+---
+
