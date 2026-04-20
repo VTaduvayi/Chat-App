@@ -120,7 +120,7 @@ Instead of overengineering (pagination/virtualization), the app focuses on:
 
 ### Future Improvements
 
-* Pagination using `after` cursortek
+* Pagination using `after` cursor
 * Virtualized message list for large datasets
 * WebSocket-based real-time updates
 
