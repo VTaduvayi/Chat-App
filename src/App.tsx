@@ -18,12 +18,6 @@ export function App() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageCountRef = useRef(0);
 
-  const scrollToBottom = () => {
-    if (messageCountRef.current < messages.length) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const loadMessages = useCallback(async () => {
     try {
       const data = await fetchMessages();
@@ -66,20 +60,25 @@ export function App() {
   }, [loadMessages]);
 
   useEffect(() => {
-    scrollToBottom();
+    if (messageCountRef.current < messages.length) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
     messageCountRef.current = messages.length;
   }, [messages]);
 
-  const handleSend = useCallback(async (message: string, author: string) => {
-    setIsSending(true);
-    try {
-      const newMessage = await sendMessage(message, author);
-      setMessages((prev) => [...prev, newMessage]);
-      setCurrentAuthor(author);
-    } finally {
-      setIsSending(false);
-    }
-  }, []);
+  const handleSend = useCallback(
+    async (message: string, author: string) => {
+      setIsSending(true);
+      try {
+        const newMessage = await sendMessage(message, author);
+        setMessages((prev) => [...prev, newMessage]);
+        setCurrentAuthor(author);
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [],
+  );
 
   return (
     <div className={styles.layout}>
