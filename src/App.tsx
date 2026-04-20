@@ -17,22 +17,15 @@ export function App() {
   );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageCountRef = useRef(0);
-  const lastMessageDateRef = useRef<string | undefined>(undefined);
 
-  const loadMessages = useCallback(async (after?: string) => {
+  const loadMessages = useCallback(async () => {
     try {
-      const data = await fetchMessages(50, after);
-      if (after) {
-        // Incremental: append only new messages
-        setMessages((prev) => {
-          const existingIds = new Set(prev.map((m) => m._id));
-          const newMessages = data.filter((m) => !existingIds.has(m._id));
-          return newMessages.length > 0 ? [...prev, ...newMessages] : prev;
-        });
-      } else {
-        // Initial load: replace all
-        setMessages(data);
-      }
+      const data = await fetchMessages(200);
+      const sorted = [...data].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+      setMessages(sorted);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load");
@@ -41,28 +34,12 @@ export function App() {
     }
   }, []);
 
-  // Track latest message date for incremental polling
-  useEffect(() => {
-    if (messages.length > 0) {
-      const latest = messages[messages.length - 1];
-      if (latest) {
-        lastMessageDateRef.current = latest.createdAt;
-      }
-    }
-  }, [messages]);
-
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
     const startPolling = () => {
-      if (!lastMessageDateRef.current) {
-        loadMessages();
-      } else {
-        loadMessages(lastMessageDateRef.current);
-      }
-      interval = setInterval(() => {
-        loadMessages(lastMessageDateRef.current);
-      }, POLL_INTERVAL);
+      loadMessages();
+      interval = setInterval(loadMessages, POLL_INTERVAL);
     };
 
     const stopPolling = () => {
